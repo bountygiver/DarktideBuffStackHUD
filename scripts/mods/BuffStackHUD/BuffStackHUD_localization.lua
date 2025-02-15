@@ -52,15 +52,6 @@ local loc = {
 	psyker_force_staff_quick_attack_debuff = {
 		en = Localize("loc_talent_psyker_force_staff_quick_attack_bonus")
 	},
-	psyker_marked_enemies_passive_bonus_stacking = {
-		en = Localize("loc_talent_psyker_marked_enemies_passive")
-	},
-	psyker_marked_enemies_passive_bonus_stacking_increased_duration = {
-		en = Localize("loc_talent_psyker_mark_increased_duration")
-	},
-	psyker_marked_enemies_passive_bonus_stacking_increased_stacks = {
-		en = Localize("loc_talent_psyker_mark_increased_max_stacks")
-	},
 	psyker_overcharge_stance_damage = {
 		en = Localize("loc_talent_psyker_combat_ability_overcharge_stance")
 	},
@@ -69,12 +60,6 @@ local loc = {
 	},
 	psyker_shout_warp_generation_reduction = {
 		en = Localize("loc_talent_psyker_shout_reduces_warp_charge_generation")
-	},
-	psyker_souls = {
-		en = Localize("loc_talent_psyker_souls")
-	},
-	psyker_souls_increased_max_stacks = {
-		en = Localize("loc_talent_psyker_increased_souls")
 	},
 	psyker_stacking_movement_buff = {
 		en = Localize("loc_talent_psyker_crits_regen_tougness_and_movement_speed")
@@ -88,23 +73,11 @@ local loc = {
 	veteran_dodging_crit_buff = {
 		en = Localize("loc_talent_veteran_dodging_grants_crit")
 	},
-	veteran_improved_tag_allied_buff = {
-		en = Localize("loc_talent_veteran_improved_tag_dead_coherency_bonus")
-	},
-	veteran_improved_tag_allied_buff_increased_stacks = {
-		en = Localize("loc_talent_veteran_improved_tag_more_damage")
-	},
 	veteran_ranged_weakspot_toughenss_buff = {
 		en = Localize("loc_talent_veteran_toughness_on_weakspot_kill")
 	},
 	veteran_weapon_switch_ranged_buff = {
 		en = Localize("loc_talent_veteran_weapon_switch")
-	},
-	weapon_trait_bespoke_chainaxe_p1_guaranteed_melee_crit_on_activated_kill_effect = {
-		en = "Chain Axe Guarantee Crit"
-	},
-	weapon_trait_bespoke_combataxe_p2_guaranteed_melee_crit_after_crit_weakspot_kill_effect_percentage = {
-		en = "Combat Axe Guarantee Crit"
 	},
 	zealot_bleeding_crits_effect = {
 		en = Localize("loc_talent_zealot_bleed_melee_crit_chance")
@@ -121,6 +94,12 @@ local loc = {
 	zealot_stacking_melee_damage_effect = {
 		en = Localize("loc_talent_zealot_increased_damage_stacks_on_hit")
 	},
+	weapon_trait_bespoke_chainaxe_p1_guaranteed_melee_crit_on_activated_kill_effect = {
+		en = "Chain Axe Guarantee Crit"
+	},
+	weapon_trait_bespoke_combataxe_p2_guaranteed_melee_crit_after_crit_weakspot_kill_effect_percentage = {
+		en = "Combat Axe Guarantee Crit"
+	},
 }
 
 local hide_buffs = {
@@ -135,23 +114,351 @@ local hide_buffs = {
 	rending_debuff = 1,
 	rending_debuff_medium = 1,
 	warp_fire = 1,
+	weapon_trait_bespoke_ogryn_powermaul_slabshield_p1_block_grants_power_bonus_child = 1,
+	weapon_trait_bespoke_combataxe_p1_stacking_rending_on_one_hit_kill_child = 1,
+	weapon_trait_bespoke_autogun_p1_increase_damage_on_close_kill_child = 1,
 }
 
-for buff_name, buff in pairs(BuffTemplates) do
-	if buff.max_stacks and buff.max_stacks > 1 and buff.duration and buff.duration > 0 and not hide_buffs[buff_name] then
-		mod.buff_names[#mod.buff_names + 1] = buff_name
-		loc["enable_" .. buff_name] = loc["enable"]
-		loc["color_" .. buff_name] = loc["color"]
-		loc["showlabel_" .. buff_name] = loc["showlabel"]
+local override_buffs = {
+	veteran_weapon_switch_ranged_visual = "Weapon Specialist (Stored)",
+}
 
-		local key = "group_" .. buff_name
+mod.group_overrides = {
+	disrupt_destiny = {
+		loc = {
+			en = Localize("loc_talent_psyker_marked_enemies_passive")
+		},
+		buffs = {
+			"psyker_marked_enemies_passive_bonus_stacking",
+			"psyker_marked_enemies_passive_bonus_stacking_increased_duration",
+			"psyker_marked_enemies_passive_bonus_stacking_increased_stacks",
+		}
+	},
+	wrap_battery = {
+		loc = {
+			en = Localize("loc_talent_psyker_souls")
+		},
+		buffs = {
+			"psyker_souls",
+			"psyker_souls_increased_max_stacks",
+		}
+	},
+	veteran_tag = {
+		loc = {
+			en = Localize("loc_talent_veteran_improved_tag_dead_coherency_bonus")
+		},
+		buffs = {
+			"veteran_improved_tag_allied_buff",
+			"veteran_improved_tag_allied_buff_increased_stacks",
+		}
+	},
+	uncanny_strike = {
+		loc = {
+			en = "Uncanny Strike"
+		},
+		buffs = {
+			"weapon_trait_bespoke_combataxe_p3_stacking_rending_on_weakspot_child",
+			"weapon_trait_bespoke_combatknife_p1_stacking_rending_on_weakspot_child",
+			"weapon_trait_bespoke_combatsword_p3_stacking_rending_on_weakspot_child",
+			"weapon_trait_bespoke_forcesword_p1_stacking_rending_on_weakspot_child",
+		}
+	},
+	staff_charger = {
+		loc = {
+			en = "Warp Flurry"
+		},
+		buffs = {
+			"weapon_trait_bespoke_forcestaff_p1_faster_charge_on_chained_secondary_attacks_child",
+			"weapon_trait_bespoke_forcestaff_p2_faster_charge_on_chained_secondary_attacks_child",
+			"weapon_trait_bespoke_forcestaff_p3_faster_charge_on_chained_secondary_attacks_child",
+			"weapon_trait_bespoke_forcestaff_p4_faster_charge_on_chained_secondary_attacks_child",
+		}
+	},
+	weap_trait_consecutive_hits_increases_close_damage_child = {
+		loc = {
+			en = "Dumdum"
+		},
+		buffs = {
+			"weapon_trait_bespoke_autogun_p1_consecutive_hits_increases_close_damage_child",
+			"weapon_trait_bespoke_lasgun_p3_consecutive_hits_increases_close_damage_child",
+			"weapon_trait_bespoke_laspistol_p1_consecutive_hits_increases_close_damage_child",
+		},
+	},
+	weap_trait_increase_close_damage_on_close_kill_child = {
+		loc = {
+			en = "Fire Frenzy"
+		},
+		buffs = {
+			"weapon_trait_bespoke_autogun_p1_increase_close_damage_on_close_kill_child",
+			"weapon_trait_bespoke_autogun_p2_increase_close_damage_on_close_kill_child",
+			"weapon_trait_bespoke_bolter_p1_increase_close_damage_on_close_kill_child",
+			"weapon_trait_bespoke_heavystubber_p1_increase_close_damage_on_close_kill_child",
+			"weapon_trait_bespoke_ogryn_heavystubber_p2_increase_close_damage_on_close_kill_child",
+			"weapon_trait_bespoke_ogryn_rippergun_p1_increase_close_damage_on_close_kill_child",
+			"weapon_trait_bespoke_shotgun_p1_increase_close_damage_on_close_kill_child",
+			"weapon_trait_bespoke_shotgun_p2_increase_close_damage_on_close_kill_child",
+		},
+	},
+	weap_trait_increase_power_on_close_kill_child = {
+		loc = {
+			en = "Deathspitter"
+		},
+		buffs = {
+			"weapon_trait_bespoke_autogun_p1_increase_power_on_close_kill_child",
+			"weapon_trait_bespoke_autogun_p2_increase_power_on_close_kill_child",
+			"weapon_trait_bespoke_lasgun_p3_increase_power_on_close_kill_child",
+			"weapon_trait_bespoke_ogryn_heavystubber_p1_increase_power_on_close_kill_child",
+			"weapon_trait_bespoke_ogryn_heavystubber_p2_increase_power_on_close_kill_child",
+			"weapon_trait_bespoke_shotgun_p1_increase_power_on_close_kill_child",
+			"weapon_trait_bespoke_shotgun_p2_increase_power_on_close_kill_child",
+		},
+	},
+	weap_trait_reload_speed_on_close_kill_child = {
+		loc = {
+			en = "Speedload"
+		},
+		buffs = {
+			"weapon_trait_bespoke_autogun_p1_reload_speed_on_slide_child",
+			"weapon_trait_bespoke_autogun_p2_reload_speed_on_slide_child",
+			"weapon_trait_bespoke_autopistol_p1_reload_speed_on_slide_child",
+			"weapon_trait_bespoke_lasgun_p3_reload_speed_on_slide_child",
+			"weapon_trait_bespoke_laspistol_p1_reload_speed_on_slide_child",
+			"weapon_trait_bespoke_shotgun_p2_reload_speed_on_slide_child",
+			"weapon_trait_bespoke_stubrevolver_p1_reload_speed_on_slide_child",
+		},
+	},
+	weap_trait_stacking_power_bonus_on_staggering_enemies_child = {
+		loc = {
+			en = "Pinning Fire"
+		},
+		buffs = {
+			"weapon_trait_bespoke_autopistol_p1_stacking_power_bonus_on_staggering_enemies_child",
+			"weapon_trait_bespoke_bolter_p1_stacking_power_bonus_on_staggering_enemies_child",
+			"weapon_trait_bespoke_ogryn_heavystubber_p2_stacking_power_bonus_on_staggering_enemies_child",
+		},
+	},
+	weap_trait_increase_power_on_hit_child = {
+		loc = {
+			en = "Headtaker"
+		},
+		buffs = {
+			"weapon_trait_bespoke_chainaxe_p1_increase_power_on_hit_child",
+			"weapon_trait_bespoke_combataxe_p1_increase_power_on_hit_child",
+			"weapon_trait_bespoke_combataxe_p2_increase_power_on_hit_child",
+			"weapon_trait_bespoke_combatsword_p2_increase_power_on_hit_child",
+			"weapon_trait_bespoke_ogryn_pickaxe_2h_p1_increase_power_on_hit_child",
+			"weapon_trait_bespoke_thunderhammer_2h_p1_increase_power_on_hit_child",
+		},
+	},
+	weap_trait_increase_power_on_kill_child = {
+		loc = {
+			en = "Slaughterer"
+		},
+		buffs = {
+			"weapon_trait_bespoke_chainaxe_p1_increase_power_on_kill_child",
+			"weapon_trait_bespoke_forcesword_p1_increase_power_on_kill_child",
+			"weapon_trait_bespoke_ogryn_combatblade_p1_increase_power_on_kill_child",
+			"weapon_trait_bespoke_ogryn_pickaxe_2h_p1_increase_power_on_kill_child",
+			"weapon_trait_bespoke_powermaul_2h_p1_increase_power_on_kill_child",
+			"weapon_trait_bespoke_powersword_p1_increase_power_on_kill_child",
+			"weapon_trait_bespoke_thunderhammer_2h_p1_increase_power_on_kill_child",
+		},
+	},
+	weap_trait_chained_hits_increases_crit_chance_child = {
+		loc = {
+			en = "Shred"
+		},
+		buffs = {
+			"weapon_trait_bespoke_chainsword_2h_p1_chained_hits_increases_crit_chance_child",
+			"weapon_trait_bespoke_chainsword_p1_chained_hits_increases_crit_chance_child",
+			"weapon_trait_bespoke_combataxe_p1_chained_hits_increases_crit_chance_child",
+			"weapon_trait_bespoke_combataxe_p2_chained_hits_increases_crit_chance_child",
+			"weapon_trait_bespoke_combatsword_p1_chained_hits_increases_crit_chance_child",
+			"weapon_trait_bespoke_combatsword_p3_chained_hits_increases_crit_chance_child",
+			"weapon_trait_bespoke_forcesword_2h_p1_chained_hits_increases_crit_chance_child",
+			"weapon_trait_bespoke_forcesword_p1_chained_hits_increases_crit_chance_child",
+		},
+	},
+	weap_trait_chained_hits_increases_melee_cleave_child = {
+		loc = {
+			en = "Wrath"
+		},
+		buffs = {
+			"weapon_trait_bespoke_chainsword_2h_p1_chained_hits_increases_melee_cleave_child",
+			"weapon_trait_bespoke_chainsword_p1_chained_hits_increases_melee_cleave_child",
+			"weapon_trait_bespoke_combatsword_p1_chained_hits_increases_melee_cleave_child",
+			"weapon_trait_bespoke_combatsword_p2_chained_hits_increases_melee_cleave_child",
+			"weapon_trait_bespoke_forcesword_2h_p1_chained_hits_increases_melee_cleave_child",
+			"weapon_trait_bespoke_ogryn_pickaxe_2h_p1_chained_hits_increases_melee_cleave_child",
+			"weapon_trait_bespoke_powersword_2h_p1_chained_hits_increases_melee_cleave_child",
+			"weapon_trait_bespoke_powersword_p1_chained_hits_increases_melee_cleave_child",
+		},
+	},
+	weap_trait_chained_hits_increases_power_child = {
+		loc = {
+			en = "Decimator"
+		},
+		buffs = {
+			"weapon_trait_bespoke_combataxe_p1_chained_hits_increases_power_child",
+			"weapon_trait_bespoke_combataxe_p2_chained_hits_increases_power_child",
+			"weapon_trait_bespoke_combataxe_p3_chained_hits_increases_power_child",
+			"weapon_trait_bespoke_ogryn_gauntlet_p1_chained_melee_hits_increases_power_child"
+		},
+	},
+	weap_trait_consecutive_melee_hits_same_target_increases_melee_power_child = {
+		loc = {
+			en = "Relentless Strikes"
+		},
+		buffs = {
+			"weapon_trait_bespoke_combataxe_p2_consecutive_melee_hits_same_target_increases_melee_power_child",
+			"weapon_trait_bespoke_combatsword_p3_consecutive_melee_hits_same_target_increases_melee_power_child"
+		},
+	},
+	weap_trait_consecutive_hits_increases_stagger_child = {
+		loc = {
+			en = "Trauma"
+		},
+		buffs = {
+			"weapon_trait_bespoke_combataxe_p3_consecutive_hits_increases_stagger_child",
+			"weapon_trait_bespoke_combatsword_p1_consecutive_hits_increases_stagger_child",
+			"weapon_trait_bespoke_powermaul_2h_p1_consecutive_hits_increases_stagger_child",
+			"weapon_trait_bespoke_powermaul_p1_consecutive_hits_increases_stagger_child",
+			"weapon_trait_bespoke_thunderhammer_2h_p1_consecutive_hits_increases_stagger_child",
+		},
+	},
+	weap_trait_stacking_increase_impact_on_hit_child = {
+		loc = {
+			en = "Hammerblow"
+		},
+		buffs = {
+			"weapon_trait_bespoke_combataxe_p3_stacking_increase_impact_on_hit_child",
+			"weapon_trait_bespoke_combatsword_p1_stacking_increase_impact_on_hit_child",
+			"weapon_trait_bespoke_powermaul_2h_p1_stacking_increase_impact_on_hit_child",
+			"weapon_trait_bespoke_powermaul_p1_stacking_increase_impact_on_hit_child",
+			"weapon_trait_bespoke_thunderhammer_2h_p1_stacking_increase_impact_on_hit_child",
+		},
+	},
+	weap_trait_chained_weakspot_hits_increases_power_child = {
+		loc = {
+			en = "Executor"
+		},
+		buffs = {
+			"weapon_trait_bespoke_combatknife_p1_chained_weakspot_hits_increases_power_child",
+			"weapon_trait_bespoke_forcesword_p1_chained_weakspot_hits_increases_power_child",
+			"weapon_trait_bespoke_stubrevolver_p1_chained_weakspot_hits_increases_power_child",
+		},
+	},
+	weap_trait_heavy_chained_hits_increases_killing_blow_chance_child = {
+		loc = {
+			en = "Haymaker"
+		},
+		buffs = {
+			"weapon_trait_bespoke_combatknife_p1_heavy_chained_hits_increases_killing_blow_chance_child",
+			"weapon_trait_bespoke_ogryn_club_p2_heavy_chained_hits_increases_killing_blow_chance_child",
+		},
+	},
+	weap_trait_rending_on_multiple_hits_child = {
+		loc = {
+			en = "Bladed Momentum"
+		},
+		buffs = {
+			"weapon_trait_bespoke_combatsword_p2_rending_on_multiple_hits_child",
+		},
+	},
+	weap_trait_elite_kills_grants_stackable_power_child = {
+		loc = {
+			en = "Superiority"
+		},
+		buffs = {
+			"weapon_trait_bespoke_forcesword_p1_elite_kills_grants_stackable_power_child",
+		},
+	},
+	weap_trait_consecutive_hits_increases_ranged_power_child = {
+		loc = {
+			en = "Overwhelming Fire"
+		},
+		buffs = {
+			"weapon_trait_bespoke_ogryn_heavystubber_p1_consecutive_hits_increases_ranged_power_child",
+			"weapon_trait_bespoke_ogryn_heavystubber_p2_consecutive_hits_increases_ranged_power_child",
+		},
+	},
+	weap_trait_chained_weakspot_hits_increase_finesse_and_reduce_overheat_child = {
+		loc = {
+			en = "Cranial Grounding"
+		},
+		buffs = {
+			"weapon_trait_bespoke_powersword_2h_p1_chained_weakspot_hits_increase_finesse_and_reduce_overheat_child"
+		},
+	},
+}
+mod.group_buffs = {}
+mod.child_parent_buffs = {}
 
-		loc[key] = loc[key] or {}
-		loc[key]["en"] = "    " .. buff_name
-		if loc[buff_name] and loc[buff_name].en then
-			loc[key]["en"] = "    " .. loc[buff_name].en
+for group_name, group in pairs(mod.group_overrides) do
+	if group.buffs then
+		for _, b in ipairs(group.buffs) do
+			mod.group_buffs[b] = group_name
+			loc[b] = group.loc
 		end
 	end
+end
+
+local parent_buffs = {}
+
+for buff_name, buff in pairs(BuffTemplates) do
+	if buff.child_buff_template then
+		mod.child_parent_buffs[buff.child_buff_template] = buff_name
+		parent_buffs[buff.child_buff_template] = buff
+	end
+end
+
+for buff_name, buff in pairs(BuffTemplates) do
+	if not mod.group_buffs[buff_name] then
+		if override_buffs[buff_name] then
+			mod.buff_names[#mod.buff_names + 1] = buff_name
+			loc[buff_name] = { en = override_buffs[buff_name] or buff_name }
+		elseif buff.max_stacks and buff.max_stacks > 1 and not hide_buffs[buff_name] then
+			if buff.duration and buff.duration > 0 then
+				mod.buff_names[#mod.buff_names + 1] = buff_name
+			elseif mod.group_buffs[buff_name] == nil then
+				local parent_buff = parent_buffs[buff_name]
+				if parent_buff and parent_buff.child_duration and parent_buff.base_child_buff_template then
+					mod:echo(parent_buff.base_child_buff_template)
+					local group_key = "autogen_" .. parent_buff.base_child_buff_template
+					mod.group_overrides[group_key] = mod.group_overrides[group_key] or { 
+						loc = {
+							en = Localize("loc_" .. parent_buff.base_child_buff_template)
+						},
+						buffs = {},
+					}
+					mod.group_overrides[group_key].buffs[#mod.group_overrides[group_key].buffs + 1] = buff_name
+					mod.group_buffs[buff_name] = group_key
+					loc[buff_name] = mod.group_overrides[group_key].loc
+				end
+			end
+		end
+	end
+end
+
+for _, buff_name in ipairs(mod.buff_names) do
+	loc["enable_" .. buff_name] = loc["enable"]
+	loc["color_" .. buff_name] = loc["color"]
+	loc["showlabel_" .. buff_name] = loc["showlabel"]
+
+	local key = "group_" .. buff_name
+
+	loc[key] = loc[key] or {}
+	loc[key]["en"] = "    " .. buff_name
+	if loc[buff_name] and loc[buff_name].en then
+		loc[key]["en"] = "    " .. loc[buff_name].en
+	end
+end
+
+for group_name, group in pairs(mod.group_overrides) do
+	loc["enable_g_" .. group_name] = loc["enable"]
+	loc["color_g_" .. group_name] = loc["color"]
+	loc["showlabel_g_" .. group_name] = loc["showlabel"]
+	loc["group_g_" .. group_name] = group.loc or {}
 end
 
 table.sort(mod.buff_names, function(a, b)

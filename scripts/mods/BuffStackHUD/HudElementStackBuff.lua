@@ -96,14 +96,12 @@ local _populate_buff = function(widget, buff_name, stack_count, max_stack, durat
 	widget.content.stack = stack_count
 	widget.content.label = mod.labels[buff_name] and mod:localize(buff_name) or ""
 	local font_size = stack_font_size
-	if duration_pct > 0.75 then
-		font_size = font_size + math.lerp(0, font_size, duration_pct - 0.75)
-	end
+	widget.style.charge_bar.visible = duration_pct ~= 0
 	widget.style.stack.font_size = font_size
 	widget.style.label.font_size = label_font_size
 	widget.style.charge_bar.size = { 150, 150 }
 	widget.style.charge_bar.material_values.progress = math.lerp(0.028, 0.252, duration_pct)
-	widget.style.charge_bar.material_values.color_blend = stack_count > 15 and 1 or math.lerp(0.01, 1, stack_count / (max_stack or 1))
+	widget.style.charge_bar.material_values.color_blend = stack_count > max_stack and 1 or math.lerp(0.01, 1, stack_count / (max_stack or 1))
 
 	local custom_color = mod.colors[buff_name]
 	if custom_color and Color[custom_color] then
@@ -132,24 +130,50 @@ HudElementStackBuff.update = function(self, dt, t, ui_renderer, render_settings,
 	local nodupe = {}
 	local buffs_needs_slots = {}
 	local reserved_slots = {}
+	local duration_need_update = {}
+	local buff_pairs = {}
 	for _, buff in pairs(buff_extensions._buffs_by_index) do
 		local template = buff:template()
-		if template and mod.colors[template.name] then
-			local buff_stack = buff:stat_buff_stacking_count() or 0
-			local duration_pct = buff:duration_progress() or 0
-			if buff_stack > 0 and duration_pct > 0 and not nodupe[template.name] then
-				nodupe[template.name] = {
-					stack = buff_stack,
-					max_stack = buff:max_stacks(),
-					duration_pct = duration_pct,
-				}
-				if mod.last_buff_idx[template.name] and mod.last_buff_idx[template.name] <= buff_max then
-					reserved_slots[mod.last_buff_idx[template.name]] = template.name
-				else
-					buffs_needs_slots[#buffs_needs_slots + 1] = template.name
-					-- mod:echo("buff need slot " .. template.name)
+		if template and template.name then
+			if mod.colors[template.name] then
+				local buff_stack = buff:stat_buff_stacking_count() or 0
+				local duration_pct = buff:duration_progress() or 0
+				if buff_stack > 0 and duration_pct > 0 and not nodupe[template.name] then
+					nodupe[template.name] = {
+						stack = buff_stack,
+						max_stack = buff:max_stacks(),
+						duration_pct = duration_pct,
+						duration = buff:duration() or 0,
+					}
+					if mod.last_buff_idx[template.name] and mod.last_buff_idx[template.name] <= buff_max then
+						reserved_slots[mod.last_buff_idx[template.name]] = template.name
+					else
+						buffs_needs_slots[#buffs_needs_slots + 1] = template.name
+						-- mod:echo("buff need slot " .. template.name)
+					end
 				end
 			end
+			if not buff_pairs[template.name] then
+				buff_pairs[template.name] = buff
+			end
+		end
+	end
+
+	for buff_name, buff in pairs(nodupe) do
+		if buff.duration_pct == 1 and mod.child_parent_buffs[buff_name] and buff_pairs[mod.child_parent_buffs[buff_name]] then
+			local parent_buff = buff_pairs[mod.child_parent_buffs[buff_name]]
+			buff.duration_pct = parent_buff:duration_progress() or 1
+			buff.duration = (parent_buff._template and parent_buff._template.child_duration) or (parent_buff._template_override_data and parent_buff._template_override_data.child_duration) or buff.duration
+		end
+		if buff.duration == 0 then
+			buff.duration_pct = 0
+		end
+		if buff_name == "veteran_weapon_switch_ranged_visual" and buff_pairs["veteran_weapon_switch_passive_buff"] then
+			-- Weapon specialist uses an unconventional way to stores the charges
+			-- So we must hard code this
+			local parent_buff = buff_pairs["veteran_weapon_switch_passive_buff"]
+			buff.max_stack = parent_buff._template_data and parent_buff._template_data.max_ranged_stacks or 1
+			buff.stack = parent_buff._template_data and parent_buff._template_data.ranged_stacks or 0
 		end
 	end
 

@@ -22,6 +22,14 @@ local function get_toggles()
 			mod.labels[buff_name] = mod:get("showlabel_" .. buff_name)
 		end
 	end
+	for group_name, group in pairs(mod.group_overrides) do
+		if mod:get("enable_g_" .. group_name) then
+			for _, buff_name in ipairs(group.buffs) do
+				mod.colors[buff_name] = mod:get("color_g_" .. group_name) or "dark_magenta"
+				mod.labels[buff_name] = mod:get("showlabel_g_" .. group_name)
+			end
+		end
+	end
 end
 
 get_toggles()

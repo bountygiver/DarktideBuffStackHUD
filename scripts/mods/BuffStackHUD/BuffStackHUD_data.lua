@@ -56,6 +56,31 @@ for _, buff_name in ipairs(mod.buff_names) do
 	}
 end
 
+for group_name, _ in pairs(mod.group_overrides) do
+	widgets[#widgets + 1] = {
+		setting_id = "group_g_" .. group_name,
+		type = "group",
+		sub_widgets = {
+			{
+				setting_id = "enable_g_" .. group_name,
+				type = "checkbox",
+				default_value = true
+			},
+			{
+				setting_id = "showlabel_g_" .. group_name,
+				type = "checkbox",
+				default_value = true
+			},
+			{
+				setting_id = "color_g_" .. group_name,
+				type = "dropdown",
+				default_value = "dark_magenta",
+				options = table.clone(color_option)
+			}
+		}
+	}
+end
+
 return {
 	name = mod:localize("mod_name"),
 	description = mod:localize("mod_description"),
