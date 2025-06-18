@@ -30,6 +30,8 @@ end)
 
 local widgets = {
 }
+local lock_options = {}
+lock_options[1] = { text = "Slot not Reserved", value = "" }
 
 for _, buff_name in ipairs(mod.buff_names) do
 	widgets[#widgets + 1] = {
@@ -53,6 +55,10 @@ for _, buff_name in ipairs(mod.buff_names) do
 				options = table.clone(color_option)
 			}
 		}
+	}
+	lock_options[#lock_options + 1] = {
+		text = "group_" .. buff_name,
+		value = buff_name,
 	}
 end
 
@@ -79,7 +85,28 @@ for group_name, _ in pairs(mod.group_overrides) do
 			}
 		}
 	}
+	lock_options[#lock_options + 1] = {
+		text = "group_g_" .. group_name,
+		value = "g_" .. group_name,
+	}
 end
+
+local lock_settings = {}
+
+for i = 1, mod.buff_max do
+	lock_settings[#lock_settings + 1] = {
+		setting_id = "lock_slot_" .. i,
+		type = "dropdown",
+		default_value = "",
+		options = table.clone(lock_options)
+	}
+end
+
+widgets[#widgets + 1] = {
+	setting_id = "lock_slot_group",
+	type = "group",
+	sub_widgets = lock_settings,
+}
 
 return {
 	name = mod:localize("mod_name"),

@@ -2,6 +2,7 @@ local mod = get_mod("BuffStackHUD")
 local BuffTemplates = require("scripts/settings/buff/buff_templates")
 
 mod.buff_names = {}
+mod.buff_max = 6
 
 local loc = {
 	mod_name = {
@@ -18,6 +19,9 @@ local loc = {
 	},
 	color = {
 		en = "Color"
+	},
+	lock_slot_group = {
+		en = "Lock Slots"
 	},
 	chaos_beast_of_nurgle_hit_by_vomit = {
 		en = "Beast of Nurgle Vomit"
@@ -39,6 +43,24 @@ local loc = {
 	},
 	ogryn_heavy_hitter_damage_effect = {
 		en = Localize("loc_talent_ogryn_heavy_hitter_max_stacks_improves_toughness")
+	},
+	ogryn_blo_stacking_buff = {
+		en = Localize("loc_talent_ogryn_chance_to_not_consume_ammo")
+	},
+	ogryn_block_increases_power_active_buff = {
+		en = Localize("loc_talent_ogryn_block_increases_power_name")
+	},
+	ogryn_damage_taken_by_all_increases_strength_tdr_buff = {
+		en = Localize("loc_talent_ogryn_damage_taken_by_all_increases_strength_tdr")
+	},
+	ogryn_melee_improves_ranged_stacking_buff = {
+		en = Localize("loc_talent_ogryn_melee_improves_ranged")
+	},
+	ogryn_stacking_attack_speed_active_buff = {
+		en = Localize("loc_talent_ogryn_stacking_attack_speed_name")
+	},
+	ogryn_taunt_restore_toughness_over_time = {
+		en = Localize("loc_talent_ogryn_taunt_restore_toughness")
 	},
 	psyker_crits_empower_warp_buff = {
 		en = Localize("loc_talent_psyker_crits_empower_next_attack")
@@ -117,10 +139,14 @@ local hide_buffs = {
 	weapon_trait_bespoke_ogryn_powermaul_slabshield_p1_block_grants_power_bonus_child = 1,
 	weapon_trait_bespoke_combataxe_p1_stacking_rending_on_one_hit_kill_child = 1,
 	weapon_trait_bespoke_autogun_p1_increase_damage_on_close_kill_child = 1,
+	hordes_ailment_minion_burning = 1,
+	hordes_ailment_minion_bleed = 1,
+	hordes_buff_elemental_weakness = 1,
 }
 
 local override_buffs = {
 	veteran_weapon_switch_ranged_visual = "Weapon Specialist (Stored)",
+	psyker_guaranteed_ranged_shot_on_stacked = Localize("loc_talent_psyker_weakspot_grants_crit"),
 }
 
 mod.group_overrides = {
@@ -141,6 +167,15 @@ mod.group_overrides = {
 		buffs = {
 			"psyker_souls",
 			"psyker_souls_increased_max_stacks",
+		}
+	},
+	empowered_psionics = {
+		loc = {
+			en = Localize("loc_talent_psyker_empowered_ability")
+		},
+		buffs = {
+			"psyker_empowered_grenades_passive_visual_buff",
+			"psyker_empowered_grenades_passive_visual_buff_increased",
 		}
 	},
 	veteran_tag = {
@@ -448,9 +483,9 @@ for _, buff_name in ipairs(mod.buff_names) do
 	local key = "group_" .. buff_name
 
 	loc[key] = loc[key] or {}
-	loc[key]["en"] = "    " .. buff_name
+	loc[key]["en"] = buff_name
 	if loc[buff_name] and loc[buff_name].en then
-		loc[key]["en"] = "    " .. loc[buff_name].en
+		loc[key]["en"] = loc[buff_name].en
 	end
 end
 
@@ -471,6 +506,10 @@ for i, name in ipairs(Color.list) do
 
     loc[name] = {}
     loc[name].en = text
+end
+
+for i = 1, mod.buff_max do
+	loc["lock_slot_" .. i] = { en = "Slot " .. i }
 end
 
 return loc

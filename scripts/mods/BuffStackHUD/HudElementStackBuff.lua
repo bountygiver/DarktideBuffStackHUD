@@ -11,12 +11,10 @@ local definitions = {
   	}
 }
 
-local buff_count = 6
-
 local stack_font_size = 30
 local label_font_size = 15
 
-for i = 1, buff_count do
+for i = 1, mod.buff_max do
 	local buff_group_name = "buff_" .. i
 	definitions["scenegraph_definition"][buff_group_name .. "_area"] = {
 		parent = "screen",
@@ -137,16 +135,27 @@ HudElementStackBuff.update = function(self, dt, t, ui_renderer, render_settings,
 		if template and template.name then
 			if mod.colors[template.name] then
 				local buff_stack = buff:stat_buff_stacking_count() or 0
+				if template.name == "veteran_weapon_switch_ranged_visual" or template.name == "psyker_empowered_grenades_passive_visual_buff_increased" then
+					-- Weapon specialist uses an unconventional way to stores the charges
+					-- So we must hard code this
+					buff_stack = buff:visual_stack_count() or 0
+					-- mod:dump(buff)
+				end
 				local duration_pct = buff:duration_progress() or 0
-				if buff_stack > 0 and duration_pct > 0 and not nodupe[template.name] then
+				local finished = buff._template_data and buff._template_data.finish
+				if buff_stack > 0 and duration_pct > 0 and not finished and not nodupe[template.name] then
 					nodupe[template.name] = {
 						stack = buff_stack,
 						max_stack = buff:max_stacks(),
 						duration_pct = duration_pct,
 						duration = buff:duration() or 0,
 					}
-					if mod.last_buff_idx[template.name] and mod.last_buff_idx[template.name] <= buff_max then
-						reserved_slots[mod.last_buff_idx[template.name]] = template.name
+					local last_slot = mod.last_buff_idx[template.name]
+					local reserve_slot = mod.reserve[template.name]
+					if reserve_slot and reserve_slot <= buff_max and not reserved_slots[reserve_slot] then
+						reserved_slots[reserve_slot] = template.name
+					elseif last_slot and last_slot <= buff_max and not reserved_slots[last_slot] then
+						reserved_slots[last_slot] = template.name
 					else
 						buffs_needs_slots[#buffs_needs_slots + 1] = template.name
 						-- mod:echo("buff need slot " .. template.name)
@@ -166,14 +175,11 @@ HudElementStackBuff.update = function(self, dt, t, ui_renderer, render_settings,
 			buff.duration = (parent_buff._template and parent_buff._template.child_duration) or (parent_buff._template_override_data and parent_buff._template_override_data.child_duration) or buff.duration
 		end
 		if buff.duration == 0 then
-			buff.duration_pct = 0
-		end
-		if buff_name == "veteran_weapon_switch_ranged_visual" and buff_pairs["veteran_weapon_switch_passive_buff"] then
-			-- Weapon specialist uses an unconventional way to stores the charges
-			-- So we must hard code this
-			local parent_buff = buff_pairs["veteran_weapon_switch_passive_buff"]
-			buff.max_stack = parent_buff._template_data and parent_buff._template_data.max_ranged_stacks or 1
-			buff.stack = parent_buff._template_data and parent_buff._template_data.ranged_stacks or 0
+			if	buff.max_stack > 1 then
+				buff.duration_pct = buff.stack / buff.max_stack
+			else
+				buff.duration_pct = 0
+			end
 		end
 	end
 
@@ -190,7 +196,7 @@ HudElementStackBuff.update = function(self, dt, t, ui_renderer, render_settings,
 			local buff = nodupe[reserved_slots[buff_idx]]
 			_populate_buff(widget, reserved_slots[buff_idx], buff.stack, buff.max_stack, buff.duration_pct)
 			mod.last_buff_idx[reserved_slots[buff_idx]] = buff_idx
-		else
+		elseif not mod.emptyslots[buff_idx] then
 			next_idx, buff_name = buff_iters(buffs_needs_slots, next_idx)
 			if buff_name then
 				local buff = nodupe[buff_name]
@@ -201,6 +207,8 @@ HudElementStackBuff.update = function(self, dt, t, ui_renderer, render_settings,
 				buffs_needs_slots = {}
 				widget.visible = false
 			end
+		else
+			widget.visible = false
 		end
 	end
 end
