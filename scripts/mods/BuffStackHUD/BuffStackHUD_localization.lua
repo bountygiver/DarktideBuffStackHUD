@@ -116,6 +116,30 @@ local loc = {
 	zealot_stacking_melee_damage_effect = {
 		en = Localize("loc_talent_zealot_increased_damage_stacks_on_hit")
 	},
+	adamant_crit_chance_on_kill_effect = {
+		en = Localize("loc_talent_adamant_crit_chance_on_kill")
+	},
+	adamant_forceful_stacks = {
+		en = Localize("loc_talent_adamant_forceful")
+	},
+	adamant_forceful_strength_stacks = {
+		en = Localize("loc_talent_adamant_forceful_refresh_on_ability")
+	},
+	adamant_hunt_stance_damage = {
+		en = Localize("loc_talent_adamant_stance_elite_kills_stack_damage")
+	},
+	adamant_stacking_damage_buff = {
+		en = Localize("loc_talent_adamant_stacking_damage")
+	},
+	adamant_stacking_weakspot_strength_buff = {
+		en = Localize("loc_talent_adamant_stacking_weakspot_strength")
+	},
+	adamant_staggers_reduce_damage_taken_buff = {
+		en = Localize("loc_talent_adamant_staggers_reduce_damage_taken")
+	},
+	adamant_wield_speed_on_melee_kill_buff = {
+		en = Localize("loc_talent_adamant_wield_speed_on_melee_kill")
+	},
 	weapon_trait_bespoke_chainaxe_p1_guaranteed_melee_crit_on_activated_kill_effect = {
 		en = "Chain Axe Guarantee Crit"
 	},
@@ -424,6 +448,23 @@ mod.group_overrides = {
 		buffs = {
 			"weapon_trait_bespoke_powersword_2h_p1_chained_weakspot_hits_increase_finesse_and_reduce_overheat_child"
 		},
+	},
+	weap_trait_stacking_buff_on_continuous_fire = {
+		loc = {
+			en = "Blaze Away"
+		},
+		buffs = {
+			"weapon_trait_bespoke_autopistol_p1_power_bonus_on_continuous_fire",
+			"weapon_trait_bespoke_flamer_p1_power_bonus_on_continuous_fire",
+			"weapon_trait_bespoke_forcestaff_p2_power_bonus_on_continuous_fire",
+			"weapon_trait_bespoke_ogryn_gauntlet_p1_power_bonus_on_continuous_fire",
+			"weapon_trait_bespoke_ogryn_heavystubber_p1_power_bonus_on_continuous_fire",
+			"weapon_trait_bespoke_ogryn_heavystubber_p2_power_bonus_on_continuous_fire",
+			"weapon_trait_bespoke_ogryn_rippergun_p1_power_bonus_on_continuous_fire",
+			"weapon_trait_bespoke_ogryn_thumper_p1_power_bonus_on_continuous_fire",
+			"weapon_trait_bespoke_ogryn_thumper_p2_power_bonus_on_continuous_fire",
+			"weapon_trait_bespoke_plasmagun_p1_power_bonus_on_continuous_fire",
+		}
 	},
 }
 mod.group_buffs = {}
