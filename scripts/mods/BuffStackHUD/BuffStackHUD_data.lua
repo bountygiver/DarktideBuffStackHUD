@@ -108,6 +108,27 @@ widgets[#widgets + 1] = {
 	sub_widgets = lock_settings,
 }
 
+widgets[#widgets + 1] = {
+	setting_id = "hud_element_settings_group",
+	type = "group",
+	sub_widgets = {
+		{
+			setting_id = "stack_font_size",
+			type = "numeric",
+			default_value = 30,
+			range = { 5, 50 },
+			decimals_number = 0,
+		},
+		{
+			setting_id = "label_font_size",
+			type = "numeric",
+			default_value = 15,
+			range = { 5, 50 },
+			decimals_number = 0,
+		},
+	},
+}
+
 return {
 	name = mod:localize("mod_name"),
 	description = mod:localize("mod_description"),

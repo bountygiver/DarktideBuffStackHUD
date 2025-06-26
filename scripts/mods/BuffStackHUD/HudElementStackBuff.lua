@@ -11,8 +11,6 @@ local definitions = {
   	}
 }
 
-local stack_font_size = 30
-local label_font_size = 15
 
 for i = 1, mod.buff_max do
 	local buff_group_name = "buff_" .. i
@@ -31,7 +29,7 @@ for i = 1, mod.buff_max do
 			style_id = "stack",
 			style = {
 				font_type = "machine_medium",
-				font_size = stack_font_size,
+				font_size = mod.stack_font_size,
 				drop_shadow = true,
 				text_vertical_alignment = "center",
 				text_horizontal_alignment = "center",
@@ -66,7 +64,7 @@ for i = 1, mod.buff_max do
 			style_id = "label",
 			style = {
 				font_type = "machine_medium",
-				font_size = label_font_size,
+				font_size = mod.label_font_size,
 				drop_shadow = true,
 				text_vertical_alignment = "center",
 				text_horizontal_alignment = "center",
@@ -93,10 +91,10 @@ local _populate_buff = function(widget, buff_name, stack_count, max_stack, durat
 	widget.visible = true
 	widget.content.stack = stack_count
 	widget.content.label = mod.labels[buff_name] and mod:localize(buff_name) or ""
-	local font_size = stack_font_size
+	local font_size = mod.stack_font_size
 	widget.style.charge_bar.visible = duration_pct ~= 0
 	widget.style.stack.font_size = font_size
-	widget.style.label.font_size = label_font_size
+	widget.style.label.font_size = mod.label_font_size
 	widget.style.charge_bar.size = { 150, 150 }
 	widget.style.charge_bar.material_values.progress = math.lerp(0.028, 0.252, duration_pct)
 	widget.style.charge_bar.material_values.color_blend = stack_count > max_stack and 1 or math.lerp(0.01, 1, stack_count / (max_stack or 1))

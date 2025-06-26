@@ -14,6 +14,9 @@ mod.colors = {}
 mod.labels = {}
 mod.reserve = {}
 mod.emptyslots = {}
+mod.stack_font_size = 30
+mod.label_font_size = 15
+mod.redraw_required = false
 
 local function get_toggles()
 	mod.colors = {}
@@ -48,6 +51,18 @@ local function get_toggles()
 				end
 			end
 		end
+	end
+
+	local temp_int = mod:get("stack_font_size")
+	if mod.stack_font_size ~= temp_int then
+		mod.stack_font_size = temp_int
+		mod.redraw_required = true
+	end
+
+	temp_int = mod:get("label_font_size")
+	if mod.label_font_size ~= temp_int then
+		mod.label_font_size = temp_int
+		mod.redraw_required = true
 	end
 end
 

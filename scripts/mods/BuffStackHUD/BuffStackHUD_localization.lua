@@ -23,6 +23,15 @@ local loc = {
 	lock_slot_group = {
 		en = "Lock Slots"
 	},
+	hud_element_settings_group = {
+		en = "HUD Appearance"
+	},
+	stack_font_size = {
+		en = "Stack Number Size"
+	},
+	label_font_size = {
+		en = "Buff Name Size"
+	},
 	chaos_beast_of_nurgle_hit_by_vomit = {
 		en = "Beast of Nurgle Vomit"
 	},
