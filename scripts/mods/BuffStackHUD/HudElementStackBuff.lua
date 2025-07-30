@@ -111,6 +111,15 @@ local _populate_buff = function(widget, buff_name, stack_count, max_stack, durat
 	end
 end
 
+local function get_buff_by_name(buff_extensions, buff_name)
+	for _, buff in pairs(buff_extensions._buffs_by_index) do
+		if buff._template_name == buff_name then
+			return buff
+		end
+	end
+	return nil
+end
+
 HudElementStackBuff.update = function(self, dt, t, ui_renderer, render_settings, input_service)
 	HudElementStackBuff.super.update(self, dt, t, ui_renderer, render_settings, input_service)
 	local player = Managers.player:local_player(1)
@@ -130,23 +139,36 @@ HudElementStackBuff.update = function(self, dt, t, ui_renderer, render_settings,
 	local buff_pairs = {}
 	for _, buff in pairs(buff_extensions._buffs_by_index) do
 		local template = buff:template()
+		local temp_max_stack = 1
 		if template and template.name then
 			if mod.colors[template.name] then
 				local buff_stack = buff:stat_buff_stacking_count() or 0
+				local duration = buff:duration() or 0
+				local duration_pct = buff:duration_progress() or 0
 				if template.name == "veteran_weapon_switch_ranged_visual" or template.name == "psyker_empowered_grenades_passive_visual_buff_increased" then
 					-- Weapon specialist uses an unconventional way to stores the charges
 					-- So we must hard code this
 					buff_stack = buff:visual_stack_count() or 0
 					-- mod:dump(buff)
+				elseif template.name == "zealot_fanatic_rage" then
+					-- The zealot keystone also don't use conventional way to store stacks
+					buff_stack = buff:template_data().talent_resource_component.current_resource or 0
+					temp_max_stack = buff:template_data().talent_resource_component.max_resource or 1
+					if buff_stack == temp_max_stack then
+						local rage_real_buff = get_buff_by_name(buff_extensions, "zealot_fanatic_rage_buff")
+						if rage_real_buff then
+							duration_pct = rage_real_buff:duration_progress() or 0
+							duration = rage_real_buff:duration() or 0
+						end
+					end
 				end
-				local duration_pct = buff:duration_progress() or 0
 				local finished = buff._template_data and buff._template_data.finish
 				if buff_stack > 0 and duration_pct > 0 and not finished and not nodupe[template.name] then
 					nodupe[template.name] = {
 						stack = buff_stack,
-						max_stack = buff:max_stacks(),
+						max_stack = buff.max_stacks and buff:max_stacks() or temp_max_stack,
 						duration_pct = duration_pct,
-						duration = buff:duration() or 0,
+						duration = duration,
 					}
 					local last_slot = mod.last_buff_idx[template.name]
 					local reserve_slot = mod.reserve[template.name]
@@ -173,7 +195,7 @@ HudElementStackBuff.update = function(self, dt, t, ui_renderer, render_settings,
 			buff.duration = (parent_buff._template and parent_buff._template.child_duration) or (parent_buff._template_override_data and parent_buff._template_override_data.child_duration) or buff.duration
 		end
 		if buff.duration == 0 then
-			if	buff.max_stack > 1 then
+			if buff.max_stack > 1 then
 				buff.duration_pct = buff.stack / buff.max_stack
 			else
 				buff.duration_pct = 0

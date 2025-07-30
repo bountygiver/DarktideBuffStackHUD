@@ -180,6 +180,7 @@ local hide_buffs = {
 local override_buffs = {
 	veteran_weapon_switch_ranged_visual = "Weapon Specialist (Stored)",
 	psyker_guaranteed_ranged_shot_on_stacked = Localize("loc_talent_psyker_weakspot_grants_crit"),
+	zealot_fanatic_rage = Localize("loc_talent_zealot_fanatic_rage")
 }
 
 mod.group_overrides = {
