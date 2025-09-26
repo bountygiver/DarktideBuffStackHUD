@@ -1,0 +1,45 @@
+name: upload-nexus-mods-manual
+
+on:
+  workflow_dispatch:
+    inputs:
+        version:
+            description: 'Tag of Release'
+            required: true
+            type: string
+
+jobs:
+  fetch-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Make Directory
+        id: make_dir
+        run: mkdir releases
+      - name: Get Current Release
+        id: get_current_release
+        uses: KevinRohn/github-full-release-data@v2
+        with:
+          version: ${{ github.event.inputs.version }}
+          asset-file: '*.zip'
+          asset-output: './releases/'
+      - name: Repack zipball to be inside BuffStackHUD folder
+        run: |
+          mkdir BuffStackHUD
+          unzip './releases/*.zip' -d './BuffStackHUD'
+          zip -r BuffStackHUD.zip BuffStackHUD
+    outputs:
+      release-name: ${{ steps.get_current_release.outputs.name }}
+      release-body: ${{ steps.get_current_release.outputs.body }}
+  upload-release:
+    needs: ["fetch-release"]
+    uses: BUTR/workflows/.github/workflows/release-nexusmods.yml@master
+    with:
+      nexusmods_game_id: warhammer40kdarktide
+      nexusmods_mod_id: 470
+      mod_filename: BuffStackHUD.zip
+      mod_version: ${{ needs.fetch-release.outputs.release-name }}
+      mod_description: ${{ needs.fetch-release.outputs.release-body }}
+      artifact_name: BuffStackHUD.zip
+    secrets:
+      NEXUSMODS_APIKEY: ${{ secrets.NEXUSMODS_APIKEY }}
+      NEXUSMODS_SESSION_COOKIE: ${{ secrets.NEXUSMODS_COOKIES }}
