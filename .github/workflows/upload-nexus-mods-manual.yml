@@ -25,7 +25,7 @@ jobs:
       - name: Repack zipball to be inside BuffStackHUD folder
         run: |
           mkdir BuffStackHUD
-          unzip './releases/*.zip' -d './BuffStackHUD'
+          unzip './releases/\*.zip' -d './BuffStackHUD'
           zip -r BuffStackHUD.zip BuffStackHUD
     outputs:
       release-name: ${{ steps.get_current_release.outputs.name }}
