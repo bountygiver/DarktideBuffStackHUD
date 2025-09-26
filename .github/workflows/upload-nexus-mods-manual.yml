@@ -30,7 +30,7 @@ jobs:
       - name: Repack zipball to be inside BuffStackHUD folder
         run: |
           mv ./src/scripts BuffStackHUD
-          mv *.mod BuffStackHUD
+          mv ./src/*.mod BuffStackHUD
           zip -r BuffStackHUD.zip BuffStackHUD
     outputs:
       release-name: ${{ steps.get_current_release.outputs.name }}
