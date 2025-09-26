@@ -119,11 +119,26 @@ local loc = {
 	zealot_multi_hits_increase_impact_effect = {
 		en = Localize("loc_talent_zealot_multi_hits_increase_impact")
 	},
-	zealot_quickness_active = {
-		en = Localize("loc_talent_zealot_quickness")
-	},
 	zealot_stacking_melee_damage_effect = {
 		en = Localize("loc_talent_zealot_increased_damage_stacks_on_hit")
+	},
+	zealot_stacking_melee_damage_after_dodge_effect = {
+		en = Localize("loc_talent_zealot_stacking_melee_damage_after_dodge")
+	},
+	zealot_backstabs_increase_backstab_damage_effect = {
+		en = Localize("loc_talent_zealot_backstabs_increase_backstab_damage")
+	},
+	zealot_heavy_multihits_increase_melee_damage_effect = {
+		en = Localize("loc_talent_zealot_heavy_multihits_increase_melee_damage")
+	},
+	zealot_kills_increase_damage_of_next_melee_effect = {
+		en = Localize("loc_talent_zealot_kills_increase_damage_of_next_melee")
+	},
+	zealot_stacking_rending_buff = {
+		en = Localize("loc_talent_zealot_crits_rend")
+	},
+	zealot_stacking_weakspot_power_effect = {
+		en = Localize("loc_talent_zealot_stacking_weakspot_power")
 	},
 	adamant_crit_chance_on_kill_effect = {
 		en = Localize("loc_talent_adamant_crit_chance_on_kill")
@@ -212,6 +227,15 @@ mod.group_overrides = {
 			"psyker_empowered_grenades_passive_visual_buff_increased",
 		}
 	},
+	veteran_focus = {
+		loc = {
+			en = Localize("loc_talent_veteran_snipers_focus")
+		},
+		buffs = {
+			"veteran_snipers_focus_stat_buff",
+			"veteran_snipers_focus_stat_buff_increased_stacks",
+		}
+	},
 	veteran_tag = {
 		loc = {
 			en = Localize("loc_talent_veteran_improved_tag_dead_coherency_bonus")
@@ -219,6 +243,15 @@ mod.group_overrides = {
 		buffs = {
 			"veteran_improved_tag_allied_buff",
 			"veteran_improved_tag_allied_buff_increased_stacks",
+		}
+	},
+	zealot_quickness = {
+		loc = {
+			en = Localize("loc_talent_zealot_quickness")
+		},
+		buffs = {
+			"zealot_quickness_active",
+			"zealot_quickness_active_increased_duration",
 		}
 	},
 	uncanny_strike = {
