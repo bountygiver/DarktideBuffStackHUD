@@ -14,18 +14,23 @@ jobs:
     steps:
       - name: Make Directory
         id: make_dir
-        run: mkdir releases
+        run: |
+          mkdir src
+          mkdir BuffStackHUD
       - name: Get Current Release
         id: get_current_release
         uses: KevinRohn/github-full-release-data@v2
         with:
           version: ${{ github.event.inputs.version }}
-          asset-file: '*.zip'
-          asset-output: './releases/'
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.version }}
+          path: './src'
       - name: Repack zipball to be inside BuffStackHUD folder
         run: |
-          mkdir BuffStackHUD
-          unzip './releases/\*.zip' -d './BuffStackHUD'
+          mv ./src/scripts BuffStackHUD
+          mv *.mod BuffStackHUD
           zip -r BuffStackHUD.zip BuffStackHUD
     outputs:
       release-name: ${{ steps.get_current_release.outputs.name }}
