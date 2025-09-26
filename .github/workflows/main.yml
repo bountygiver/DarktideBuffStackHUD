@@ -1,0 +1,39 @@
+name: upload-nexus-mods-test
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Tag of Release'
+        required: true
+        type: string
+      mod_version:
+        required: false
+        type: string
+        default: ''
+      mod_description:
+        required: false
+        type: string
+        default: ''
+      checkout_ref:
+        required: true
+        type: string
+      cookie:
+        description: 'Copy cookie'
+        required: true
+        type: string
+        
+jobs:
+  fetch-upload:
+    uses: bountygiver/DarktideModAutoUploader/.github/workflows/pack_mod.yml@master
+    with:
+      nexus_mod_id: 470
+      mod_version: ${{ inputs.mod_version }}
+      mod_description: ${{ inputs.mod_description }}
+      checkout_ref: ${{ inputs.checkout_ref }}
+    secrets:
+      NEXUSMODS_APIKEY: ${{ secrets.NEXUSMODS_APIKEY }}
+      NEXUSMODS_SESSION_COOKIE: ${{ inputs.cookie }}
+      
+      
+    
