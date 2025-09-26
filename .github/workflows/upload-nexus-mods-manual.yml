@@ -16,7 +16,8 @@ jobs:
         id: make_dir
         run: |
           mkdir src
-          mkdir BuffStackHUD
+          mkdir out
+          mkdir out/BuffStackHUD
       - name: Get Current Release
         id: get_current_release
         uses: KevinRohn/github-full-release-data@v2
@@ -25,21 +26,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.version }}
+          ref: ${{ steps.get_current_release.outputs.tag_name }}
           path: './src'
       - name: Repack zipball to be inside BuffStackHUD folder
         run: |
-          mv ./src/scripts BuffStackHUD
-          mv ./src/*.mod BuffStackHUD
-          zip -r BuffStackHUD.zip BuffStackHUD
+          mv ./src/scripts ./out/BuffStackHUD
+          mv ./src/*.mod ./out/BuffStackHUD
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release_zip
-          path: BuffStackHUD.zip
+          name: BuffStackHUD
+          path: ./out/
     outputs:
-      release-name: ${{ steps.get_current_release.outputs.name }}
-      release-body: ${{ steps.get_current_release.outputs.body }}
+      release-name: ${{ github.event.inputs.version }}
+      release-body: manual name enter required
   upload-release:
     needs: ["fetch-release"]
     uses: BUTR/workflows/.github/workflows/release-nexusmods.yml@master
@@ -49,7 +49,7 @@ jobs:
       mod_filename: BuffStackHUD.zip
       mod_version: ${{ needs.fetch-release.outputs.release-name }}
       mod_description: ${{ needs.fetch-release.outputs.release-body }}
-      artifact_name: release_zip
+      artifact_name: BuffStackHUD
     secrets:
       NEXUSMODS_APIKEY: ${{ secrets.NEXUSMODS_APIKEY }}
       NEXUSMODS_SESSION_COOKIE: ${{ secrets.NEXUSMODS_COOKIES }}
