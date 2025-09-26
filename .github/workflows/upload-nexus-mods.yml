@@ -8,6 +8,9 @@ jobs:
   fetch-release:
     runs-on: ubuntu-latest
     steps:
+      - name: Make Directory
+        id: make_dir
+        run: mkdir releases
       - name: Get Current Release
         id: get_current_release
         uses: KevinRohn/github-full-release-data@v2
