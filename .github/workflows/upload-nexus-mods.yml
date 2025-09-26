@@ -4,40 +4,15 @@ on:
   release:
     types: [ "published" ]
 
+
 jobs:
-  fetch-release:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Make Directory
-        id: make_dir
-        run: |
-          mkdir src
-          mkdir out
-          mkdir out/BuffStackHUD
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.release.tag_name }}
-          path: './src'
-      - name: Repack zipball to be inside BuffStackHUD folder
-        run: |
-          mv ./src/scripts ./out/BuffStackHUD
-          mv ./src/*.mod ./out/BuffStackHUD
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: BuffStackHUD
-          path: ./out/
-  upload-release:
-    needs: ["fetch-release"]
-    uses: BUTR/workflows/.github/workflows/release-nexusmods.yml@master
+  fetch-upload:
+    uses: bountygiver/DarktideModAutoUploader/.github/workflows/pack_mod.yml@master
     with:
-      nexusmods_game_id: warhammer40kdarktide
       nexusmods_mod_id: 470
-      mod_filename: BuffStackHUD.zip
       mod_version: ${{ github.event.release.name }}
       mod_description: ${{ github.event.release.body }}
-      artifact_name: BuffStackHUD
+      checkout_ref: ${{ github.event.release.tag_name }}
     secrets:
       NEXUSMODS_APIKEY: ${{ secrets.NEXUSMODS_APIKEY }}
       NEXUSMODS_SESSION_COOKIE: ${{ secrets.NEXUSMODS_COOKIES }}

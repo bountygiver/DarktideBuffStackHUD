@@ -4,52 +4,35 @@ on:
   workflow_dispatch:
     inputs:
         version:
-            description: 'Tag of Release'
-            required: true
-            type: string
+          description: 'Tag of Release'
+          required: true
+          type: string
+        cookie:
+          required: true
+          description: 'Cookie of logged in nexus mods session'
+          type: string
 
 jobs:
   fetch-release:
     runs-on: ubuntu-latest
     steps:
-      - name: Make Directory
-        id: make_dir
-        run: |
-          mkdir src
-          mkdir out
-          mkdir out/BuffStackHUD
       - name: Get Current Release
         id: get_current_release
         uses: KevinRohn/github-full-release-data@v2
         with:
           version: ${{ github.event.inputs.version }}
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ steps.get_current_release.outputs.tag_name }}
-          path: './src'
-      - name: Repack zipball to be inside BuffStackHUD folder
-        run: |
-          mv ./src/scripts ./out/BuffStackHUD
-          mv ./src/*.mod ./out/BuffStackHUD
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: BuffStackHUD
-          path: ./out/
     outputs:
-      release-name: ${{ github.event.inputs.version }}
-      release-body: manual name enter required
-  upload-release:
+      release-name: ${{ steps.get_current_release.outputs.name }}
+      release-body: ${{fromJson(steps.get_current_release.outputs.body)}}
+      release-tag: ${{ steps.get_current_release.outputs.tag_name }}
+  fetch-upload:
     needs: ["fetch-release"]
-    uses: BUTR/workflows/.github/workflows/release-nexusmods.yml@master
+    uses: bountygiver/DarktideModAutoUploader/.github/workflows/pack_mod.yml@master
     with:
-      nexusmods_game_id: warhammer40kdarktide
       nexusmods_mod_id: 470
-      mod_filename: BuffStackHUD.zip
       mod_version: ${{ needs.fetch-release.outputs.release-name }}
       mod_description: ${{ needs.fetch-release.outputs.release-body }}
-      artifact_name: BuffStackHUD
+      checkout_ref: ${{ needs.fetch-release.outputs.release-tag }}
     secrets:
       NEXUSMODS_APIKEY: ${{ secrets.NEXUSMODS_APIKEY }}
-      NEXUSMODS_SESSION_COOKIE: ${{ secrets.NEXUSMODS_COOKIES }}
+      NEXUSMODS_SESSION_COOKIE: ${{ inputs.cookie }}
