@@ -22,6 +22,7 @@ on:
         description: 'Copy cookie'
         required: true
         type: string
+  pull_request:
         
 jobs:
   fetch-upload:
@@ -34,6 +35,3 @@ jobs:
     secrets:
       NEXUSMODS_APIKEY: ${{ secrets.NEXUSMODS_APIKEY }}
       NEXUSMODS_SESSION_COOKIE: ${{ inputs.cookie }}
-      
-      
-    
