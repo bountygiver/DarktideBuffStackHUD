@@ -37,6 +37,7 @@ jobs:
       mod_version: ${{ needs.fetch-release.outputs.release-name }}
       mod_description: ${{ needs.fetch-release.outputs.release-body }}
       checkout_ref: ${{ needs.fetch-release.outputs.release-tag }}
+      upload: ${{ inputs.upload }}
     secrets:
       NEXUSMODS_APIKEY: ${{ secrets.NEXUSMODS_APIKEY }}
       NEXUSMODS_SESSION_COOKIE: ${{ inputs.cookie }}
