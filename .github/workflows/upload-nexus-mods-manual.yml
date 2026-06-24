@@ -27,7 +27,7 @@ jobs:
       release-tag: ${{ steps.get_current_release.outputs.tag_name }}
   fetch-upload:
     needs: ["fetch-release"]
-    uses: bountygiver/DarktideModAutoUploader/.github/workflows/pack_mod.yml@bfea6d4c20dd6a90c75387743b94e1e5ef3ea2c0
+    uses: bountygiver/DarktideModAutoUploader/.github/workflows/pack_mod.yml@v4
     with:
       file_id: 1689616
       mod_version: ${{ needs.fetch-release.outputs.release-name }}

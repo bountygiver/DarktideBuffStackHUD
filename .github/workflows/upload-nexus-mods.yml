@@ -7,7 +7,7 @@ on:
 
 jobs:
   fetch-upload:
-    uses: bountygiver/DarktideModAutoUploader/.github/workflows/pack_mod.yml@1763528a1172e07e13118d34f42f0ab050d52f96
+    uses: bountygiver/DarktideModAutoUploader/.github/workflows/pack_mod.yml@v4
     with:
       file_id: 1689616
       mod_version: ${{ github.event.release.name }}
