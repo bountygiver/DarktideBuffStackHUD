@@ -7,10 +7,6 @@ on:
           description: 'Tag of Release'
           required: true
           type: string
-        cookie:
-          required: true
-          description: 'Cookie of logged in nexus mods session named nexusmods_session'
-          type: string
         upload:
           required: true
           description: 'Actually upload the file'
@@ -31,13 +27,12 @@ jobs:
       release-tag: ${{ steps.get_current_release.outputs.tag_name }}
   fetch-upload:
     needs: ["fetch-release"]
-    uses: bountygiver/DarktideModAutoUploader/.github/workflows/pack_mod.yml@test-skip
+    uses: bountygiver/DarktideModAutoUploader/.github/workflows/pack_mod.yml@1763528a1172e07e13118d34f42f0ab050d52f96
     with:
-      nexusmods_mod_id: 470
+      file_id: 1689616
       mod_version: ${{ needs.fetch-release.outputs.release-name }}
       mod_description: ${{ needs.fetch-release.outputs.release-body }}
       checkout_ref: ${{ needs.fetch-release.outputs.release-tag }}
       upload: ${{ inputs.upload }}
     secrets:
       NEXUSMODS_APIKEY: ${{ secrets.NEXUSMODS_APIKEY }}
-      NEXUSMODS_SESSION_COOKIE: ${{ inputs.cookie }}
